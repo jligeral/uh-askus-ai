@@ -26,3 +26,13 @@ body {
   padding-top: 10px;
   padding-bottom: 20px;
 }
+
+.navbar {
+  background: rgb(191,142,12);
+  background: linear-gradient(90deg, rgba(191,142,12,1) 0%, rgba(255,255,255,1) 50%, rgba(191,142,12,1) 100%);
+}
+
+footer {
+  color: white;
+  background-color: #333;
+}
