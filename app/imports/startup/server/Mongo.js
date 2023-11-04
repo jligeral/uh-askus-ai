@@ -22,7 +22,7 @@ if (Articles.collection.find().count() === 0) {
     const subject = $('title').toString();
     const content = $('body').toString();
     addArticle(subject, content);
-    console.log(`  Adding: ${subject}`);
+    // console.log(`  Adding: ${subject}`);
   });
   console.log('All articles loaded!');
 
