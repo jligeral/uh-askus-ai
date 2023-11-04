@@ -1,6 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Roles } from 'meteor/alanning:roles';
 import { Stuffs } from '../../api/stuff/Stuff';
+import { Articles } from '../../api/articles/Articles';
+
+// Publish the Articles collection for all users.
+Meteor.publish('articles', function () {
+  // You can simply return the entire collection.
+  return Articles.find();
+});
 
 // User-level publication.
 // If logged in, then publish documents owned by this user. Otherwise, publish nothing.
