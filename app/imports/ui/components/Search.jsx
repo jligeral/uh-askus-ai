@@ -14,7 +14,7 @@ const chatMessages = [
 
 const ITSearch = () => (
   <Container id="landing-page" fluid className="py-3">
-    <Row className="align-middle text-center">
+    <Row>
       <Col xs={4}>
         <InputGroup className="mb-3 search-bar-input-group">
           <Form.Control
@@ -26,7 +26,7 @@ const ITSearch = () => (
         </InputGroup>
       </Col>
 
-      <Col xs={8} className="d-flex flex-column justify-content-center">
+      <Col xs={8} className="d-flex flex-column justify-content-start">
         {chatMessages.map((chat) => (<div>{chat.content}</div>))}
       </Col>
 
