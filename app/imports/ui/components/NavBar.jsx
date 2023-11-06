@@ -4,7 +4,7 @@ import { useTracker } from 'meteor/react-meteor-data';
 import { NavLink } from 'react-router-dom';
 import { Roles } from 'meteor/alanning:roles';
 import { Container, Image, Nav, Navbar, NavDropdown } from 'react-bootstrap';
-import { BoxArrowRight, PersonFill, PersonPlusFill } from 'react-bootstrap-icons';
+import { BoxArrowRight, List, PersonFill, PersonPlusFill } from 'react-bootstrap-icons';
 
 const NavBar = () => {
   // useTracker connects Meteor data to React components. https://guide.meteor.com/react.html#using-withTracker
@@ -30,6 +30,28 @@ const NavBar = () => {
             ) : ''}
           </Nav>
           <Nav className="justify-content-end">
+            <NavDropdown title={<List />} id="basic-nav-dropdown" className="menu-dropdown">
+              <NavDropdown.Item id="home" title="Home">
+                <a href="https://www.hawaii.edu/its/" target="_blank" rel="noopener noreferrer" className="menu-link">
+                  Home
+                </a>
+              </NavDropdown.Item>
+              <NavDropdown.Item id="about" title="About">
+                <a href="https://www.hawaii.edu/its/about/" target="_blank" rel="noopener noreferrer" className="menu-link">
+                  About
+                </a>
+              </NavDropdown.Item>
+              <NavDropdown.Item id="new" title="News">
+                <a href="https://www.hawaii.edu/its/category/news//" target="_blank" rel="noopener noreferrer" className="menu-link">
+                  News
+                </a>
+              </NavDropdown.Item>
+              <NavDropdown.Item id="contact" title="Contact">
+                <a href="https://www.hawaii.edu/its/contact/" target="_blank" rel="noopener noreferrer" className="menu-link">
+                  Contact
+                </a>
+              </NavDropdown.Item>
+            </NavDropdown>
             {currentUser === '' ? (
               <NavDropdown id="login-dropdown" title="Login">
                 <NavDropdown.Item id="login-dropdown-sign-in" as={NavLink} to="/signin">

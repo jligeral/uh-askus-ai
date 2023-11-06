@@ -2,18 +2,20 @@ import { Mongo } from 'meteor/mongo';
 import SimpleSchema from 'simpl-schema';
 
 /**
- * The ArticlesCollection. It encapsulates state and variable values for stuff.
+ * The ChatsCollection. It encapsulates state and variable values for chat messages.
  */
-class ArticlesCollection {
+class ChatsCollection {
   constructor() {
     // The name of this collection.
-    this.name = 'ArticlesCollection';
+    this.name = 'ChatsCollection';
     // Define the Mongo collection.
     this.collection = new Mongo.Collection(this.name);
     // Define the structure of each document in the collection.
     this.schema = new SimpleSchema({
-      // fileName: String,
-      subject: String,
+      role: {
+        type: String,
+        allowedValues: ['user', 'assistant'],
+      },
       content: String,
     });
     // Attach the schema to the collection, so all attempts to insert a document are checked against schema.
@@ -25,7 +27,7 @@ class ArticlesCollection {
 }
 
 /**
- * The singleton instance of the ArticlesCollection.
- * @type {ArticlesCollection}
+ * The singleton instance of the ChatsCollection.
+ * @type {ChatsCollection}
  */
-export const Articles = new ArticlesCollection();
+export const Chats = new ChatsCollection();

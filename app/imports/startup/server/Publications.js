@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Roles } from 'meteor/alanning:roles';
 import { Stuffs } from '../../api/stuff/Stuff';
 import { Articles } from '../../api/articles/Articles';
+import { Chats } from '../../api/chats/Chats';
 
 // Publish the Articles collection for all users.
 Meteor.publish('articles', function () {
@@ -35,4 +36,8 @@ Meteor.publish(null, function () {
     return Meteor.roleAssignment.find({ 'user._id': this.userId });
   }
   return this.ready();
+});
+
+Meteor.publish('chats', function () {
+  return Chats.find();
 });

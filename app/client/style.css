@@ -19,6 +19,20 @@ body {
   --bs-alert-bg: var(--matr-navbar-bg);
 }
 
+.menu-dropdown .dropdown-toggle::after {
+  display: none!important;
+}
+
+.menu-link {
+  text-decoration: none; /* Remove underline */
+  color: inherit;       /* Inherit the color */
+  transition: color 0.2s; /* Add a smooth color transition on hover */
+}
+
+.menu-link:hover {
+  color: mediumpurple;
+}
+
 /* Define custom styles */
 .gray-background {
   background-color: var(--matr-navbar-bg);

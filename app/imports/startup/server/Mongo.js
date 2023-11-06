@@ -10,7 +10,15 @@ const addArticle = (fileName, content) => {
   Articles.collection.insert({ subject: fileName, content: content });
 };
 // Use Absolute Path here for now
-const ArticlesDir = ('CHANGE TO ABSOLUTE PATH OF YOUR ARTICLES DIRECTORY');
+// Get the current working directory (Meteor project's root directory)
+const projectDir = process.env.PWD;
+
+// Define the relative path to the articles directory
+const relativeArticlesPath = 'public/articles';
+
+// Construct the full path to the articles directory
+const ArticlesDir = path.join(projectDir, relativeArticlesPath);
+
 // Initialize the Articles collection if empty.
 if (Articles.collection.find().count() === 0) {
   console.log('Loading articles');
@@ -24,5 +32,4 @@ if (Articles.collection.find().count() === 0) {
     // console.log(`  Adding: ${subject}`);
   });
   console.log('All articles loaded!');
-
 }
