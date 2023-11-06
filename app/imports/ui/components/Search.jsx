@@ -1,6 +1,7 @@
 import { Col, Container, Form, InputGroup, Row } from 'react-bootstrap';
 import { Search } from 'react-bootstrap-icons';
 import React from 'react';
+import ChatItem from './ChatItem';
 
 const chatMessages = [
   { role: 'assistant', content: 'Hello! How can I assist you today?' },
@@ -27,7 +28,9 @@ const ITSearch = () => (
       </Col>
 
       <Col xs={8} className="d-flex flex-column justify-content-start">
-        {chatMessages.map((chat) => (<div>{chat.content}</div>))}
+        {chatMessages.map((chat, index) => (
+          <ChatItem content={chat.content} role={chat.role} key={index} />
+        ))}
       </Col>
 
     </Row>
