@@ -33,12 +33,11 @@ const sources = [
 ];
 
 const ITSearch = () => (
-  <Container id="landing-page" fluid className="py-3">
+  <Container id="landing-page" className="py-3 fluid">
     <Row>
-      <i><h1>Chat with a Virtual Assistant</h1></i>
-    </Row>
-    <Row>
-      <Col xs={5}>
+      <Col />
+      <Col>
+        <h2>Chat with a Virtual Assistant</h2>
         <InputGroup className="mb-3 search-bar-input-group">
           <Form.Control
             placeholder="Ask a question (Ex: How to use DUO?)"
@@ -48,15 +47,19 @@ const ITSearch = () => (
           <InputGroup.Text id="btn-group"><Search /></InputGroup.Text>
         </InputGroup>
       </Col>
-      <Col xs={4} className="d-flex flex-column scrollable-col" style={{ maxHeight: '80vh', overflowY: 'auto' }}>
-        <h3>Chat History</h3>
+      <Col />
+    </Row>
+    <Row className="flex-column scrollable-col">
+      <Col className="flex-column scrollable-col" style={{ maxHeight: '80vh', overflowY: 'auto' }}>
+        <h5>Chat History</h5>
         {chatMessages.map((chat, index) => (
           <ChatItem content={chat.content} role={chat.role} key={index} />
         ))}
       </Col>
-
-      <Col xs={3} className="d-flex flex-column scrollable-col" style={{ maxHeight: '80vh', overflowY: 'auto' }}>
-        <h3>Sources</h3>
+    </Row>
+    <Row className="flex-column scrollable-col">
+      <Col className="flex-column scrollable-col" style={{ maxHeight: '80vh', overflowY: 'auto' }}>
+        <h5>Sources</h5>
         {sources.map((source, index) => (
           <Card key={index} className="mb-2">
             <Card.Header>{source.title}</Card.Header>
@@ -66,7 +69,6 @@ const ITSearch = () => (
           </Card>
         ))}
       </Col>
-
     </Row>
   </Container>
 );
