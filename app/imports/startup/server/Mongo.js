@@ -2,15 +2,20 @@ import fs from 'fs';
 import path from 'path';
 import { cheerio } from 'meteor/mrt:cheerio';
 import { Articles } from '../../api/articles/Articles';
-
 /* eslint-disable no-console */
-
-// Initialize the database with a all articles
-const addArticle = (fileName, content) => {
-  Articles.collection.insert({ subject: fileName, content: content });
+// Initialize the database with  all articles
+// addArticle is a helper function that adds an article to the Articles collection
+const addArticle = (subject, content) => {
+  Articles.collection.insert({ subject: subject, content: content });
 };
-// Use Absolute Path here for now
-const ArticlesDir = ('CHANGE TO ABSOLUTE PATH OF YOUR ARTICLES DIRECTORY');
+// Get the current working directory (Meteor project's root directory)
+const projectDir = process.env.PWD;
+
+// Define the relative path to the articles directory
+const relativeArticlesPath = 'public/articles';
+
+// Construct the full path to the articles directory
+const ArticlesDir = path.join(projectDir, relativeArticlesPath);
 // Initialize the Articles collection if empty.
 if (Articles.collection.find().count() === 0) {
   console.log('Loading articles');
@@ -18,8 +23,8 @@ if (Articles.collection.find().count() === 0) {
   fs.readdirSync(ArticlesDir).forEach((article) => {
     const body = fs.readFileSync(path.join(ArticlesDir, article), 'utf8');
     const $ = cheerio.load(body);
-    const subject = $('title').toString();
-    const content = $('body').toString();
+    const subject = $('title').text();
+    const content = $('div#content').text();
     addArticle(subject, content);
     // console.log(`  Adding: ${subject}`);
   });
