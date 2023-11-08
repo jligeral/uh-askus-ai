@@ -9,7 +9,7 @@ import { Articles } from '../../api/articles/Articles';
 const addArticle = (fileName, content) => {
   Articles.collection.insert({ subject: fileName, content: content });
 };
-// Use Absolute Path here for now
+
 // Get the current working directory (Meteor project's root directory)
 const projectDir = process.env.PWD;
 

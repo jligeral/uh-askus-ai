@@ -1,40 +1,82 @@
-import { Col, Container, Form, InputGroup, Row } from 'react-bootstrap';
+import { Col, Container, Form, InputGroup, Row, Button } from 'react-bootstrap';
 import { Search } from 'react-bootstrap-icons';
-import React from 'react';
+import React, { useState } from 'react';
+import { Meteor } from 'meteor/meteor';
 import ChatItem from './ChatItem';
+import LoadingSpinner from './LoadingSpinner';
 
-const chatMessages = [
-  { role: 'assistant', content: 'Hello! How can I assist you today?' },
-  { role: 'user', content: 'I have a question about a product.' },
-  { role: 'assistant', content: "Sure, I'd be happy to help. What's your question?" },
-  { role: 'user', content: 'Can you provide more details about the pricing?' },
-  { role: 'assistant', content: 'Of course. The pricing varies based on the product and your location. Please provide the product name and your location for accurate information.' },
-  { role: 'user', content: "The product is XYZ and I'm located in New York." },
-  { role: 'assistant', content: 'Thank you for the information. Let me check the pricing for XYZ in New York.' },
-];
+const ITSearch = () => {
+  const [userInput, setUserInput] = useState('');
+  const [chatMessages, setChatMessages] = useState([
+    { role: 'assistant', content: 'Hello! How can I assist you today?' },
+  ]);
 
-const ITSearch = () => (
-  <Container id="landing-page" fluid className="py-3">
-    <Row className="align-middle text-center">
-      <Col xs={4}>
-        <InputGroup className="mb-3 search-bar-input-group">
-          <Form.Control
-            placeholder="Ask a question"
-            aria-label="Recipient's username"
-            aria-describedby="basic-addon2"
-          />
-          <InputGroup.Text id="btn-group"><Search /></InputGroup.Text>
-        </InputGroup>
-      </Col>
+  const [isProcessing, setIsProcessing] = useState(false);
 
-      <Col xs={8} className="d-flex flex-column justify-content-start">
-        {chatMessages.map((chat, index) => (
-          <ChatItem content={chat.content} role={chat.role} key={index} />
-        ))}
-      </Col>
+  const handleUserInput = (e) => {
+    setUserInput(e.target.value);
+  };
 
-    </Row>
-  </Container>
-);
+  const handleSendMessage = () => {
+    // Set the isProcessing flag to true when starting the chatbot request
+    setIsProcessing(true);
+    // Add the user's message to the chatMessages array
+    setChatMessages((prevChatMessages) => [
+      ...prevChatMessages,
+      { role: 'user', content: userInput },
+    ]);
+
+    // Send the user's message and session ID to the server using the getChatResponse method
+    Meteor.call('getChatResponse', Meteor.userId(), userInput, (error, response) => {
+      if (!error) {
+        // Add the response from OpenAI to the chatMessages array
+        setChatMessages((prevChatMessages) => [
+          ...prevChatMessages,
+          { role: 'assistant', content: response.chatResponse },
+        ]);
+      } else {
+        // Handle any errors that occur during the API request
+        console.error(error);
+      }
+      // Set isProcessing to false to indicate that the request is complete
+      setIsProcessing(false);
+    });
+
+    // Clear the input field
+    setUserInput('');
+  };
+
+  return (
+    <Container id="landing-page" fluid className="py-3">
+      <Row className="align-middle text-center">
+        <Col xs={4}>
+          <InputGroup className="mb-3 search-bar-input-group">
+            <Form.Control
+              placeholder="Ask a question"
+              aria-label="Recipient's username"
+              aria-describedby="basic-addon2"
+              value={userInput}
+              onChange={handleUserInput}
+            />
+            <InputGroup.Text id="btn-group">
+              <Button onClick={handleSendMessage}><Search /></Button>
+            </InputGroup.Text>
+          </InputGroup>
+        </Col>
+
+        <Col xs={8} className="d-flex flex-column justify-content-start">
+          {chatMessages.map((chat, index) => (
+            <ChatItem content={chat.content} role={chat.role} key={index} />
+          ))}
+        </Col>
+      </Row>
+      {isProcessing && (
+        <Row className="justify-content-md-center">
+          <LoadingSpinner animation="border" />
+        </Row>
+      )}
+    </Container>
+  );
+};
 
 export default ITSearch;

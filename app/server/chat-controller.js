@@ -1,44 +1,82 @@
 import { Meteor } from 'meteor/meteor';
+import OpenAI from 'openai';
 import { check } from 'meteor/check';
-import { OpenAIApi } from 'openai';
-import { ConfigureOpenAI } from './openai-configuration';
 
-Meteor.methods({
-  generateChatCompletion(message) {
-    check(message, String);
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
-    // Allow both logged-in and non-logged-in users to use the chat
-    // No need to check this.userId
-    // Remove the unauthorized error
+// Constants
+const MAX_SESSION = 2;
+const MAX_TOKENS_PER_MESSAGE = 400;
 
-    // Find the user by some identifier (e.g., email or unique identifier)
-    const user = Meteor.users.findOne({ /* Add a condition to identify the user */ });
+const throwError = (type, message) => {
+  console.error(message);
+  throw new Meteor.Error(type, message);
+};
 
-    // If the user is not found, you can create a new user or handle the case as needed
+const createOpenAICompletion = async (messages) => {
+  try {
+    const filteredMessages = messages.map(({ role, content }) => ({ role, content }));
 
-    const chats = user ? user.chats.map(({ role, content }) => ({
-      role,
-      content,
-    })) : [];
-
-    chats.push({ content: message, role: 'user' });
-
-    // You can create a default user if it doesn't exist or handle the case as needed
-
-    const config = new ConfigureOpenAI();
-    const openai = new OpenAIApi(config);
-    const chatResponse = openai.createChatCompletion({
+    const response = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
-      messages: chats,
+      messages: filteredMessages,
+      temperature: 0.2,
+      max_tokens: MAX_TOKENS_PER_MESSAGE,
     });
 
-    // If the user is not found, you can create a new user or handle the case as needed
+    console.log('OpenAI API Response:', response);
 
-    if (user) {
-      user.chats.push(chatResponse.data.choices[0].message);
-      user.save();
+    if (response && response.choices && response.choices[0]) {
+      return response.choices[0].message.content;
+    }
+    return throwError('api-error', 'Unexpected OpenAI API response format');
+
+  } catch (error) {
+    return throwError('api-error', `Failed to get a response from the chatbot: ${error.message}`);
+  }
+};
+
+// Define a global or persistent object to store session data
+const userSessions = {};
+
+Meteor.methods({
+  async getChatResponse(userId, userMessage) {
+    check(userId, String);
+    check(userMessage, String);
+
+    // Retrieve or initialize the user's session
+    const userSession = userSessions[userId] || {
+      messages: [],
+    };
+
+    // Ensure the session does not exceed the maximum length
+    if (userSession.messages.length > MAX_SESSION) {
+      userSession.messages = userSession.messages.slice(-MAX_SESSION);
     }
 
-    return user ? user.chats : chatResponse.data.choices[0].message;
+    const initialContext = [
+      { role: 'system', content: 'You are a helpful chatbot that can answer questions based on the following articles provided.' },
+      { role: 'system', content: 'You can engage in friendly conversation, but your main purpose is to provide information from our knowledge base.' },
+      { role: 'assistant', content: 'Hello! How can I assist you today?' },
+    ];
+
+    console.log('Session History:', userSession.messages);
+
+    const messages = [
+      ...initialContext,
+      ...userSession.messages,
+      { role: 'user', content: userMessage },
+    ];
+
+    const chatResponse = await createOpenAICompletion(messages);
+
+    userSession.messages.push({ role: 'assistant', content: chatResponse });
+    userSessions[userId] = userSession; // Update the session
+
+    return {
+      chatResponse,
+    };
   },
 });
