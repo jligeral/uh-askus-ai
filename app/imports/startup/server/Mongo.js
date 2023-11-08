@@ -9,15 +9,9 @@ import { Articles } from '../../api/articles/Articles';
 const addArticle = (fileName, content) => {
   Articles.collection.insert({ subject: fileName, content: content });
 };
-// Use Absolute Path here for now
-// Get the current working directory (Meteor project's root directory)
-const projectDir = process.env.PWD;
-
-// Define the relative path to the articles directory
-const relativeArticlesPath = 'public/articles';
 
 // Construct the full path to the articles directory
-const ArticlesDir = path.join(projectDir, relativeArticlesPath);
+const ArticlesDir = path.resolve('public/articles');
 
 // Initialize the Articles collection if empty.
 if (Articles.collection.find().count() === 0) {
