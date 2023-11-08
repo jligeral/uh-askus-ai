@@ -48,7 +48,7 @@ const ITSearch = () => {
 
   return (
     <Container id="landing-page" fluid className="py-3">
-      <Row className="align-middle text-center">
+      <Row className="align-middle">
         <Col xs={4}>
           <InputGroup className="mb-3 search-bar-input-group">
             <Form.Control
@@ -63,7 +63,6 @@ const ITSearch = () => {
             </InputGroup.Text>
           </InputGroup>
         </Col>
-
         <Col xs={8} className="d-flex flex-column justify-content-start">
           {chatMessages.map((chat, index) => (
             <ChatItem content={chat.content} role={chat.role} key={index} />
