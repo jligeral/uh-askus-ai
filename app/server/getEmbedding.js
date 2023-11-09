@@ -1,6 +1,6 @@
 import openai from 'openai';
 
-openai.apiKey = process.env.OPEN_AI_SECRET;
+openai.apiKey = process.env.OPENAI_API_KEY;
 
 export const getEmbedding = async (text) => {
   const response = await openai.Embedding.create({
