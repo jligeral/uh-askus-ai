@@ -14,7 +14,7 @@ class ArticlesCollection {
     this.schema = new SimpleSchema({
       fileName: String,
       title: String,
-      articleText: String,
+      content: String,
     });
     // Attach the schema to the collection, so all attempts to insert a document are checked against schema.
     this.collection.attachSchema(this.schema);
