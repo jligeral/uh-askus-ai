@@ -12,8 +12,8 @@ class ArticlesCollection {
     this.collection = new Mongo.Collection(this.name);
     // Define the structure of each document in the collection.
     this.schema = new SimpleSchema({
-      // fileName: String,
-      subject: String,
+      fileName: String,
+      title: String,
       content: String,
     });
     // Attach the schema to the collection, so all attempts to insert a document are checked against schema.
@@ -25,7 +25,7 @@ class ArticlesCollection {
 }
 
 /**
- * The singleton instance of the StuffsCollection.
+ * The singleton instance of the ArticlesCollection.
  * @type {ArticlesCollection}
  */
 export const Articles = new ArticlesCollection();

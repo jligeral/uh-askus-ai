@@ -1,29 +1,34 @@
-import fs from 'fs';
-import path from 'path';
-import { cheerio } from 'meteor/mrt:cheerio';
-import { Articles } from '../../api/articles/Articles';
+import { Meteor } from 'meteor/meteor';
+import { Articles } from '/imports/api/articles/Articles';
+import Papa from 'papaparse';
 
-/* eslint-disable no-console */
-
-// Initialize the database with a all articles
-const addArticle = (fileName, content) => {
-  Articles.collection.insert({ subject: fileName, content: content });
+const addData = (data) => {
+  console.log(`Adding: ${data.fileName} (${data.title})`);
+  Articles.collection.insert(data);
 };
 
-// Construct the full path to the articles directory
-const ArticlesDir = path.resolve('public/articles');
+Meteor.startup(() => {
+  // Insert CSV data into Articles collection.
+  // eslint-disable-next-line no-undef
+  const csvFilePath = Assets.getText('parsing/parsed_data.csv');
 
-// Initialize the Articles collection if empty.
-if (Articles.collection.find().count() === 0) {
-  console.log('Loading articles');
-  // Read HTML files and add them to the Articles collection
-  fs.readdirSync(ArticlesDir).forEach((article) => {
-    const body = fs.readFileSync(path.join(ArticlesDir, article), 'utf8');
-    const $ = cheerio.load(body);
-    const subject = $('title').toString();
-    const content = $('body').toString();
-    addArticle(subject, content);
-    // console.log(`  Adding: ${subject}`);
+  Papa.parse(csvFilePath, {
+    header: true,
+    complete: function (results) {
+      if (results && results.data) {
+        console.log('Inserting CSV data into Articles collection.');
+        results.data.forEach(data => {
+          if (data.title && data.content) {
+            // Only add data if title and content are present
+            addData(data, Articles);
+          } else {
+            console.warn(`Skipping record with filename: ${data.fileName} due to missing title or content`);
+          }
+        });
+      }
+    },
+    error: function (error) {
+      console.error('Error parsing CSV:', error.message);
+    },
   });
-  console.log('All articles loaded!');
-}
+});
