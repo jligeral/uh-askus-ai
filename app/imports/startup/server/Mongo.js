@@ -6,7 +6,6 @@ const addData = (data) => {
   console.log(`Adding: ${data.fileName} (${data.title})`);
   Articles.collection.insert(data);
 };
-
 Meteor.startup(() => {
   // Insert CSV data into Articles collection.
   // eslint-disable-next-line no-undef
