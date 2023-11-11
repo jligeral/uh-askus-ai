@@ -25,9 +25,14 @@ const ITSearch = () => {
       ...prevChatMessages,
       { role: 'user', content: userInput },
     ]);
-
+    // Get the current user's ID
+    let currentUser = Meteor.userId();
+    // If the user is not logged in, set their ID to 'anonymous'
+    if (currentUser === null) {
+      currentUser = 'anonymous';
+    }
     // Send the user's message and session ID to the server using the getChatResponse method
-    Meteor.call('getChatResponse', Meteor.userId(), userInput, (error, response) => {
+    Meteor.call('getChatResponse', currentUser, userInput, (error, response) => {
       if (!error) {
         // Add the response from OpenAI to the chatMessages array
         setChatMessages((prevChatMessages) => [
