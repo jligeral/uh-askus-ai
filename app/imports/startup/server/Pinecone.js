@@ -3,50 +3,60 @@ import { Meteor } from 'meteor/meteor';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { OpenAIEmbeddings } from 'langchain/dist/embeddings/openai';
 import { Articles } from '../../api/articles/Articles';
-// import { getEmbedding } from '../../../server/getEmbedding';
 
 /* eslint-disable no-console */
+// Initialize Pinecone database
 const pinecone = new Pinecone({
   apiKey: process.env.PINECONE_API_KEY,
   environment: process.env.PINECONE_ENVIRONMENT,
 });
+// Initialize OpenAI Embeddings
 const embeddings = new OpenAIEmbeddings();
-
+// Initialize Pinecone index
 const index = pinecone.index(process.env.PINECONE_INDEX);
-
-const articles = Articles.collection.find().fetch();
-let docs = '';
-for (let i = 0; i < 5; i++) {
-  docs += articles[i].content;
-  docs = docs.trim();
-}
+// Get Pinecone index stats
+const indexStats = await index.describeIndexStats();
+console.log(`Total vector count: ${indexStats.totalRecordCount}`);
 
 Meteor.methods({
   addEmbeddingstoDatabse: async function () {
+    // Get articles from articles collection
+    const articles = Articles.collection.find().fetch();
+    let docs = '';
+    // Add all articles to one string
+    for (let i = 0; i < articles.length; i++) {
+      docs += articles[i].content;
+      docs = docs.trim();
+    }
+    // Split string into chunks of 2000 characters with 20 character overlap
     const splitter = new RecursiveCharacterTextSplitter({
       chunkSize: 2000,
-      chunkOverlap: 200,
+      chunkOverlap: 20,
     });
 
-    const embeddingArray = [];
     const chunks = await splitter.createDocuments([docs]);
-
-    for (let i = 0; i < 5; i++) {
-      const chunk = chunks[i];
+    // Loop through chunks of articles and add embedding to Pinecone database in batches of 100
+    for (let j = 0; j < chunks.length + 100; j += 100) {
+      const embeddingArray = [];
+      for (let i = j; ((i < j + 100) && (i < chunks.length)); i++) {
+        const chunk = chunks[i];
+        // eslint-disable-next-line no-await-in-loop
+        const embedding = await embeddings.embedQuery(chunk.pageContent);
+        // Assuming you want to do something with the embedding here
+        embeddingArray.push({
+          id: i.toString(),
+          values: embedding,
+          metadata: { content: chunk.pageContent },
+        });
+      }
       // eslint-disable-next-line no-await-in-loop
-      const embedding = await embeddings.embedQuery(chunk.pageContent);
-      // Assuming you want to do something with the embedding here
-      embeddingArray.push({
-        id: i.toString(),
-        values: embedding,
-        metadata: { content: chunk.pageContent },
-      });
-      console.log(embeddingArray[i]);
+      await index.upsert(embeddingArray);
     }
-    // eslint-disable-next-line no-await-in-loop
-    // Add embedding to Pinecone database
-    await index.upsert(embeddingArray);
   },
 });
-
-Meteor.call('addEmbeddingstoDatabse');
+// Check if Pinecone database is empty
+if (indexStats.totalRecordCount === 0) {
+  // If empty, add embeddings to Pinecone database
+  console.log('Adding Embeddings to Pinecone Database');
+  Meteor.call('addEmbeddingstoDatabse');
+}
