@@ -3,12 +3,16 @@
   "private": true,
   "dependencies": {
     "@babel/runtime": "^7.22.6",
+    "@pinecone-database/pinecone": "^1.1.2",
     "bootstrap": "^5.3.0",
     "classnames": "^2.3.2",
     "core-js": "^3.31.1",
+    "d3-dsv": "^2.0.0",
     "dotenv": "^16.3.1",
     "graphql": "^16.8.1",
+    "langchain": "0.0.186",
     "meteor-node-stubs": "^1.2.5",
+    "node-fetch": "^3.3.2",
     "openai": "^4.14.2",
     "papaparse": "^5.4.1",
     "prop-types": "^15.7.2",
@@ -22,7 +26,8 @@
     "sweetalert": "^2.1.2",
     "uniforms": "^3.10.2",
     "uniforms-bootstrap5": "^3.10.2",
-    "uniforms-bridge-simple-schema-2": "^3.10.2"
+    "uniforms-bridge-simple-schema-2": "^3.10.2",
+    "web-streams-polyfill": "^3.2.1"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.22.9",

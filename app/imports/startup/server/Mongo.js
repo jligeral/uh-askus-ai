@@ -3,7 +3,7 @@ import { Articles } from '/imports/api/articles/Articles';
 import Papa from 'papaparse';
 
 const addData = (data) => {
-  console.log(`Adding: ${data.fileName} (${data.title})`);
+  // console.log(`Adding: ${data.fileName} (${data.title})`);
   Articles.collection.insert(data);
 };
 Meteor.startup(() => {
@@ -21,7 +21,7 @@ Meteor.startup(() => {
             // Only add data if title and content are present
             addData(data, Articles);
           } else {
-            console.warn(`Skipping record with filename: ${data.fileName} due to missing title or content`);
+            // console.warn(`Skipping record with filename: ${data.fileName} due to missing title or content`);
           }
         });
       }
