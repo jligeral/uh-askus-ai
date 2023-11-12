@@ -36,7 +36,7 @@ const ITSearch = () => (
   <Container id="landing-page" className="py-3 fluid">
     <Row>
       <Col />
-      <Col>
+      <Col xs={12}>
         <h2>Chat with a Virtual Assistant</h2>
         <InputGroup className="mb-3 search-bar-input-group">
           <Form.Control
@@ -58,7 +58,7 @@ const ITSearch = () => (
       </Col>
     </Row>
     <Row className="flex-column scrollable-col">
-      <Col className="flex-column scrollable-col" style={{ maxHeight: '80vh', overflowY: 'auto' }}>
+      <Col className="flex-column scrollable-col" style={{ maxHeight: '40vh', overflowY: 'auto' }}>
         <h5>Sources</h5>
         {sources.map((source, index) => (
           <Card key={index} className="mb-2">
@@ -74,46 +74,3 @@ const ITSearch = () => (
 );
 
 export default ITSearch;
-
-/*
-
-const ITSearch = () => {
-
-  // Subscribe to the 'userChats' publication
-  useTracker(() => {
-    Meteor.subscribe('userChats');
-  }, []);
-
-  const [chatMessages, setChatMessages] = useState([]);
-
-  // Load chat messages from the subscription data
-  useTracker(() => {
-    const chats = Chats.collection.find({}).fetch();
-    setChatMessages(chats);
-  }, []);
-
-  return (
-    <Container id="landing-page" fluid className="py-3">
-      <Row className="align-middle text-center">
-        <Col xs={4}>
-          <InputGroup className="mb-3 search-bar-input-group">
-            <Form.Control
-              placeholder="Ask a question"
-              aria-label="Recipient's username"
-              aria-describedby="basic-addon2"
-            />
-            <InputGroup.Text id="btn-group"><Search /></InputGroup.Text>
-          </InputGroup>
-        </Col>
-
-        <Col xs={8} className="d-flex flex-column justify-content-center">
-          {chatMessages.map((chat) => (<div>{chat.content}</div>))}
-        </Col>
-
-      </Row>
-    </Container>
-  );
-};
-
-export default ITSearch;
- */
