@@ -49,19 +49,23 @@ Meteor.methods({
         const chunk = chunks[i];
         // eslint-disable-next-line no-await-in-loop
         const embedding = await embeddings.embedQuery(chunk.pageContent);
-        // Assuming you want to do something with the embedding here
-        embeddingArray.push({
-          id: i.toString(),
-          values: embedding,
-          metadata: {
-            content: chunk.pageContent,
-            fileName: chunk.metadata.fileName,
-            title: chunk.metadata.title,
-          },
-        });
+        if (embedding) {
+          embeddingArray.push({
+            id: i.toString(),
+            values: embedding,
+            metadata: {
+              content: chunk.pageContent,
+              fileName: chunk.metadata.fileName,
+              title: chunk.metadata.title,
+            },
+          });
+        }
       }
-      // eslint-disable-next-line no-await-in-loop
-      await index.upsert(embeddingArray);
+      if (embeddingArray.length > 0) {
+        console.log('Indexing embeddings');
+        // eslint-disable-next-line no-await-in-loop
+        await index.upsert(embeddingArray);
+      }
     }
   },
 });

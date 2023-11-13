@@ -49,7 +49,33 @@ const createOpenAICompletion = async (messages) => {
     return throwError('api-error', `Failed to get a response from the chatbot: ${error.message}`);
   }
 };
+const getEmbeddings = async (messages) => {
+  const userMessageEmbedding = await embeddings.embedQuery(messages);
+  console.log(`userMessageEmbedding: ${userMessageEmbedding}`);
+  // Search Pinecone database for similar articles
+  const searchResults = await index.query({
+    vector: userMessageEmbedding,
+    topK: 3,
+    includeMetadata: true,
+  });
+  // Get context from first search result
+  const context = searchResults.matches[0].metadata.content;
+  // Get three links from search results
+  const file1 = searchResults.matches[0].metadata.fileName.split('.')[0];
+  const file2 = searchResults.matches[1].metadata.fileName.split('.')[0];
+  const file3 = searchResults.matches[2].metadata.fileName.split('.')[0];
+  const link1 = `https://www.hawaii.edu/askus/${file1}`;
+  const link2 = `https://www.hawaii.edu/askus/${[file2]}`;
+  const link3 = `https://www.hawaii.edu/askus/${file3}`;
+  const linkArray = [link1, link2, link3];
 
+  console.log(`Context Retrieved: ${context}`);
+
+  return {
+    context,
+    linkArray,
+  };
+};
 // Define a global or persistent object to store session data
 const userSessions = {};
 
@@ -57,18 +83,9 @@ Meteor.methods({
   async getChatResponse(userId, userMessage) {
     check(userId, String);
     check(userMessage, String);
-    // Get userMessage embedding
-    const userMessageEmbedding = await embeddings.embedQuery(userMessage);
-    console.log(`userMessageEmbedding: ${userMessageEmbedding}`);
-    // Search Pinecone database for similar articles
-    const searchResults = await index.query({
-      vector: userMessageEmbedding,
-      topK: 3,
-      includeMetadata: true,
-    });
-    // Get context from first search result
-    const context = searchResults.matches[0].metadata.content;
-    console.log(`Context Retrieved: ${context}`);
+    const embeddingResults = await getEmbeddings(userMessage);
+    const context = embeddingResults.context;
+    const linkArray = embeddingResults.linkArray;
     // Retrieve or initialize the user's session
     const userSession = userSessions[userId] || {
       messages: [],
@@ -83,6 +100,7 @@ Meteor.methods({
       { role: 'system', content: 'You are a helpful chatbot that can answer questions based on the following articles provided.' },
       { role: 'system', content: 'You can engage in friendly conversation, but your main purpose is to provide information from our knowledge base.' },
       { role: 'system', content: `Base answers on this context: ${context}` },
+      { role: 'system', content: `Include this exact list at the end:\n\n\nRelated Article Links:\n-${linkArray[0]}\n-${linkArray[1]}\n-${linkArray[2]}` },
       { role: 'assistant', content: 'Hello! How can I assist you today?' },
     ];
 
