@@ -119,6 +119,7 @@ Meteor.methods({
 
     return {
       chatResponse,
+      linkArray,
     };
   },
 });

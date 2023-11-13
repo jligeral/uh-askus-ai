@@ -8,7 +8,7 @@ import LoadingSpinner from './LoadingSpinner';
 const ITSearch = () => {
   const [userInput, setUserInput] = useState('');
   const [chatMessages, setChatMessages] = useState([
-    { role: 'assistant', content: 'Hello! How can I assist you today?' },
+    { role: 'assistant', content: 'Hello and welcome to Ask Us! How can I assist you today?' },
   ]);
 
   const [isProcessing, setIsProcessing] = useState(false);
@@ -40,14 +40,13 @@ const ITSearch = () => {
           { role: 'assistant', content: response.chatResponse },
         ]);
       } else {
-        // Handle any errors that occur during the API request
         console.error(error);
       }
       // Set isProcessing to false to indicate that the request is complete
       setIsProcessing(false);
     });
 
-    // Clear the input field
+    // Clear the search bar
     setUserInput('');
   };
 
