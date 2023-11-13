@@ -2,11 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const ChatItem = ({ content, role }) => {
-  const userBackgroundColor = 'lightblue';
-  const assistantBackgroundColor = 'lightgreen';
+  const userBackgroundColor = 'silver';
+  const assistantBackgroundColor = 'green';
 
   const containerStyle = {
     backgroundColor: role === 'user' ? userBackgroundColor : assistantBackgroundColor,
+    color: 'white',
     padding: '10px',
     marginBottom: '10px',
     borderRadius: '5px',
