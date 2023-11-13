@@ -5,7 +5,7 @@ import { Pinecone } from '@pinecone-database/pinecone';
 import { check } from 'meteor/check';
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: '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',
 });
 
 // Constants
@@ -14,13 +14,13 @@ const MAX_TOKENS_PER_MESSAGE = 400;
 /* eslint-disable no-console */
 // Initialize Pinecone database
 const pinecone = new Pinecone({
-  apiKey: process.env.PINECONE_API_KEY,
-  environment: process.env.PINECONE_ENVIRONMENT,
+  apiKey: '5eb15b63-f6b6-44ff-b18d-073f2dff0605',
+  environment: 'gcp-starter',
 });
 // Initialize OpenAI Embeddings
 const embeddings = new OpenAIEmbeddings();
 // Initialize Pinecone index
-const index = pinecone.index(process.env.PINECONE_INDEX);
+const index = pinecone.index('uh-askus-ai');
 
 const throwError = (type, message) => {
   console.error(message);

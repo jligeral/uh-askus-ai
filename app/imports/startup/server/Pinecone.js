@@ -8,13 +8,15 @@ import { Articles } from '../../api/articles/Articles';
 /* eslint-disable no-console */
 // Initialize Pinecone database
 const pinecone = new Pinecone({
-  apiKey: process.env.PINECONE_API_KEY,
-  environment: process.env.PINECONE_ENVIRONMENT,
+  apiKey: '5eb15b63-f6b6-44ff-b18d-073f2dff0605',
+  environment: 'gcp-starter',
 });
 // Initialize OpenAI Embeddings
-const embeddings = new OpenAIEmbeddings();
+const embeddings = new OpenAIEmbeddings({
+  openAIApiKey: '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',
+});
 // Initialize Pinecone index
-const index = pinecone.index(process.env.PINECONE_INDEX);
+const index = pinecone.index('uh-askus-ai');
 // Get Pinecone index stats
 const indexStats = await index.describeIndexStats();
 console.log(`Total vector count: ${indexStats.totalRecordCount}`);
