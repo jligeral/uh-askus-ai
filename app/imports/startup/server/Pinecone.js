@@ -1,4 +1,5 @@
 import { Pinecone } from '@pinecone-database/pinecone';
+import { Document } from 'langchain/document';
 import { Meteor } from 'meteor/meteor';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { OpenAIEmbeddings } from 'langchain/dist/embeddings/openai';
@@ -22,11 +23,17 @@ Meteor.methods({
   addEmbeddingstoDatabse: async function () {
     // Get articles from articles collection
     const articles = Articles.collection.find().fetch();
-    let docs = '';
+    const articleDocs = [];
     // Add all articles to one string
     for (let i = 0; i < articles.length; i++) {
-      docs += articles[i].content;
-      docs = docs.trim();
+      const article = new Document({
+        pageContent: articles[i].content,
+        metadata: {
+          fileName: articles[i].fileName,
+          title: articles[i].title,
+        },
+      });
+      articleDocs.push(article);
     }
     // Split string into chunks of 2000 characters with 20 character overlap
     const splitter = new RecursiveCharacterTextSplitter({
@@ -34,7 +41,7 @@ Meteor.methods({
       chunkOverlap: 20,
     });
 
-    const chunks = await splitter.createDocuments([docs]);
+    const chunks = await splitter.splitDocuments(articleDocs);
     // Loop through chunks of articles and add embedding to Pinecone database in batches of 100
     for (let j = 0; j < chunks.length + 100; j += 100) {
       const embeddingArray = [];
@@ -46,7 +53,11 @@ Meteor.methods({
         embeddingArray.push({
           id: i.toString(),
           values: embedding,
-          metadata: { content: chunk.pageContent },
+          metadata: {
+            content: chunk.pageContent,
+            fileName: chunk.metadata.fileName,
+            title: chunk.metadata.title,
+          },
         });
       }
       // eslint-disable-next-line no-await-in-loop
