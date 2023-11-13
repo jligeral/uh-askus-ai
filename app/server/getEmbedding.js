@@ -1,11 +1,18 @@
-import openai from 'openai';
+import OpenAI from 'openai';
 
-openai.apiKey = process.env.OPENAI_API_KEY;
-
+/* eslint-disable no-console */
+const openai = new OpenAI();
 export const getEmbedding = async (text) => {
-  const response = await openai.Embedding.create({
-    input: text,
-    model: 'text-embedding-ada-002',
-  });
-  return response.data[0].embedding;
+  try {
+    const response = await openai.embeddings.create({
+      model: 'text-embedding-ada-002',
+      input: text,
+    });
+
+    const embedding = response.data[0].embedding;
+    return embedding;
+  } catch (error) {
+    console.error('Error getting embedding:', error);
+    throw error; // Rethrow the error for the calling code to handle
+  }
 };
