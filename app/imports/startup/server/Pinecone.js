@@ -60,8 +60,11 @@ Meteor.methods({
           },
         });
       }
-      // eslint-disable-next-line no-await-in-loop
-      await index.upsert(embeddingArray);
+      if (embeddingArray.length > 0) {
+        console.log('Indexing embeddings');
+        // eslint-disable-next-line no-await-in-loop
+        await index.upsert(embeddingArray);
+      }
     }
   },
 });
